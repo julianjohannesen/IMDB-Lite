@@ -1,15 +1,19 @@
 ﻿const omdbAPI = "https://www.omdbapi.com/?apikey=7344e22a&t=";
 const xhr = new XMLHttpRequest();
+const theList = document.getElementById('theList');
+const searchButton = document.getElementById("searchButton");
+const searchText = document.getElementById("searchText");
 
-const getMovieData = () => {
-    let theTitle = prompt("Please enter the title of a movie.");
-    let fullURL = encodeURI(omdbAPI + theTitle);
-    const theList = document.getElementById('theList');
+const getMovieData = (event) => {
+    let theTitle = "Star Wars";
+    let fullURL = encodeURI(omdbAPI + theTitle);  
     xhrRequest(fullURL, movieHandler);
+    event.preventDefault();
 }
 
 const xhrRequest = (url, eventHandler) => {
     xhr.open("GET", url, true);
+    //Maybe this should be onReadyStateChange
     xhr.onload = eventHandler;
     xhr.send();
     xhr.onerror = () => {
@@ -17,7 +21,7 @@ const xhrRequest = (url, eventHandler) => {
     };
 }
 
-const movieHandler = () => {
+const movieHandler = (event) => {
     if (xhr.status >= 200 && xhr.status < 400) {
         let data = JSON.parse(xhr.responseText);
         Object.getOwnPropertyNames(data).sort().map((v, i, a) => {
@@ -31,14 +35,13 @@ const movieHandler = () => {
     }
 }
 
-const searchText = document.getElementById("searchText");
-searchText.addEventListener("input", (event) => {
+searchButton.addEventListener("click", (event) => {
     if (searchText.validity.valueMissing) {
         searchText.setCustomValidity("Please enter the title of a movie.");
-    } else {
+        event.preventDefault();
+    } /*else {
         searchText.setCustomValidity("");
-    }
+    }*/
 });
 
-const searchButton = document.getElementById("searchButton");
 searchButton.addEventListener("click", getMovieData);
